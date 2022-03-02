@@ -5,11 +5,11 @@ import {
   ScrollView,
   Button,
   Image,
-  Switch,
 } from "react-native";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Colors from "../../constants/Colors";
+import * as cartActions from "../../store/actions/cart";
 
 const ProductDetailScreen = (props) => {
   const productId = props.navigation.getParam("productId");
@@ -18,42 +18,41 @@ const ProductDetailScreen = (props) => {
     state.products.availableProducts.find((prod) => prod.id === productId)
   );
 
+  const dispatch = useDispatch();
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView>
       <View style={styles.imageContainer}>
         <Image
           style={styles.image}
           source={{ uri: selectedProduct.imageUrl }}
         />
       </View>
-      <Button title="Add To Cart" onPress={() => {}} />
+      <View style={styles.actions}>
+        <Button
+          color={Colors.primary}
+          title="Add To Cart"
+          onPress={() => {
+            dispatch(cartActions.addToCart(selectedProduct));
+          }}
+        />
+      </View>
       <Text style={styles.price}>${selectedProduct.price.toFixed(2)}</Text>
       <Text style={styles.description}>{selectedProduct.description}</Text>
     </ScrollView>
   );
 };
 
-const isDarkMode = false;
-
-const changeModeHandler = () => {
-  isDarkMode === true ? (isDarkMode = false) : (isDarkMode = true);
-};
-
 ProductDetailScreen.navigationOptions = (navData) => {
   return {
     headerTitle: navData.navigation.getParam("productTitle"),
-    headerRight: () => (
-      <Switch value={isDarkMode} onValueChange={changeModeHandler} />
-    ),
+    headerRight: () => {},
   };
 };
 
 export default ProductDetailScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: isDarkMode === true ? "black" : "yellow",
-  },
   imageContainer: {
     height: 300,
     width: "100%",
@@ -63,13 +62,20 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   price: {
+    fontFamily: "open-sans-bold",
     fontSize: 20,
     color: "#888",
     textAlign: "center",
     marginVertical: 20,
   },
   description: {
+    fontFamily: "open-sans",
     marginHorizontal: 20,
     color: Colors.text,
+    fontSize: 14,
+    textAlign: "center",
+  },
+  actions: {
+    alignItems: "center",
   },
 });
