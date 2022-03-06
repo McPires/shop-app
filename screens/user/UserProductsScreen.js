@@ -11,7 +11,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import { HeaderButton } from "../../components/UI/HeaderButton";
+import HeaderButton from "../../components/UI/HeaderButton";
 
 import Colors from "../../constants/Colors";
 import * as productsActions from "../../store/actions/products";
@@ -58,7 +58,7 @@ const UserProductsScreen = (props) => {
 UserProductsScreen.navigationOptions = (navData) => {
   return {
     headerTitle: "Your Products",
-    headerLeft: (
+    headerLeft: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="Menu"
@@ -69,7 +69,7 @@ UserProductsScreen.navigationOptions = (navData) => {
         />
       </HeaderButtons>
     ),
-    headerRight: (
+    headerRight: () => (
       <HeaderButtons HeaderButtonComponent={HeaderButton}>
         <Item
           title="Add"
