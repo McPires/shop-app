@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import ReduxThunk from "redux-thunk";
 import { Provider } from "react-redux";
 import { enableScreens } from "react-native-screens";
 import AppLoading from "expo-app-loading";
@@ -21,7 +22,7 @@ const rootReducer = combineReducers({
   orders: ordersReducer,
 });
 
-const store = createStore(rootReducer, composeWithDevTools());
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 const fetchFonts = async () => {
   await Font.loadAsync({
