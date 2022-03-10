@@ -6,8 +6,9 @@ import {
   Platform,
   Button,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
@@ -18,8 +19,35 @@ import Colors from "../../constants/Colors";
 import * as productsActions from "../../store/actions/products";
 
 const UserProductsScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
   const userProducts = useSelector((state) => state.products.userProducts);
   const dispatch = useDispatch();
+
+  const loadProducts = useCallback(async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      await dispatch(productsActions.fetchProducts());
+    } catch (err) {
+      setError(err.message);
+    }
+    setIsLoading(false);
+  }, [dispatch, setIsLoading, setError]);
+
+  useEffect(() => {
+    const willFocusSub = props.navigation.addListener(
+      "willFocus",
+      loadProducts
+    );
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadProducts]);
+
+  useEffect(() => {
+    loadProducts();
+  }, [dispatch, loadProducts]);
 
   const editProductHandler = (id) => {
     props.navigation.navigate("EditProduct", { productId: id });
@@ -37,6 +65,37 @@ const UserProductsScreen = (props) => {
       },
     ]);
   };
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>An error occurred!</Text>
+        <Button
+          title="Try again"
+          onPress={loadProducts}
+          color={Colors.primary}
+        />
+      </View>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size={"large"} color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (!isLoading && userProducts.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ fontFamily: "open-sans", fontSize: 14 }}>
+          No products found. Maybe you could start adding some!
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
