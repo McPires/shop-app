@@ -22,15 +22,24 @@ const OrdersScreen = (props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(ordersActions.fetchOrders()).then(() => {
-      setIsLoading(false);
-    });
+    dispatch(ordersActions.fetchOrders());
+    setIsLoading(false);
   }, [dispatch]);
 
   if (isLoading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size={"large"} color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (!isLoading && orders.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ fontFamily: "open-sans", fontSize: 14 }}>
+          No orders found.
+        </Text>
       </View>
     );
   }
